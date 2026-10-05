@@ -1,28 +1,41 @@
-import {normalizePaymentStatus} from "./paymentStatus.ts";
-export type PaymentPayload = {
-  id: string;
-  amount: number;
-  currency: string;
-  metadata: { orderId: string };
-};
+import { LocalPaymentAdapter } from "./internal/LocalPaymentAdapter.ts";
+import { StripeClient } from "./internal/StripeClient.ts";
+import { normalizePaymentStatus } from "./paymentStatus.ts";
+import type {
+  PaymentPayload,
+  PaymentResponse,
+} from "./types.ts";
 
-export type PaymentResponse = {
-  chargeId: string;
-  status: "paid" | "processing" | "failed";
+export type PaymentProviderName = "stripe" | "local";
+
+type PaymentAdapter = {
+    createCharge(payload: PaymentPayload): Promise<PaymentResponse>;
 };
+const stripe = new StripeClient();
 
 export class PaymentProvider {
-  async createCharge(payload: PaymentPayload): Promise<PaymentResponse> {
-    const state =
-      payload.id.startsWith("fail_")
-        ? "declined"
-        : payload.id.startsWith("processing_")
-          ? "requires_action"
-          : "succeeded";
+  private readonly adapter: PaymentAdapter;
 
-    return {
-      chargeId: `ch_${payload.id}`,
-      status: normalizePaymentStatus(state),
-    };
+  constructor(provider: PaymentProviderName = "stripe") {
+   this.adapter =
+  provider === "local"
+    ? new LocalPaymentAdapter()
+    : {
+        async createCharge(payload: PaymentPayload): Promise<PaymentResponse> {
+          const response = await stripe.createCharge(payload);
+
+          return {
+            chargeId: response.charge_id,
+            status: normalizePaymentStatus(response.state),
+          };
+        },
+      };
+  }
+
+  async createCharge(
+    payload: PaymentPayload,
+  ): Promise<PaymentResponse> {
+  return this.adapter.createCharge(payload);
   }
 }
+

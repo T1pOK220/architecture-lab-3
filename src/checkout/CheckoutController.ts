@@ -1,6 +1,6 @@
 import { calculateTotal, type CartLine } from "../shared/calculateTotal.ts";
 import { OrderService } from "../orders/OrderService.ts";
-import type { PaymentPayload } from "../payments/payment.ts";
+import type { PaymentPayload } from "../payments/types.ts";
 import {runtimeConfig} from "../config.ts";
 
 export type CheckoutRequest = {
