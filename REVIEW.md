@@ -42,8 +42,15 @@
 * `database.ts` не повинен використовуватися зовнішніми модулями для обходу ownership Inventory.
 * Поведінка існуючих сценаріїв `paid` і `failed` не повинна змінитися.
 
-## Actual impact (заповнити після реалізації)
+## Actual impact
 
 **Actual files changed:**
 
+* `DECISIONS.md` — оновлено опис прийнятого рішення та фактичного результату реалізації.
+* `src/checkout/CheckoutController.ts` — змінено логіку `checkout` та обробку даних під час оформлення замовлення.
+* `src/inventory/StockRepository.ts` — змінено роботу з `stock` та перевірку/оновлення доступності товарів.
+* `src/orders/OrderService.ts` — змінено логіку створення та обробки `orders`.
+* `src/payments/internal/StripeClient.ts` — змінено внутрішню логіку роботи з `Stripe` та обробку `payments`.
+
 **Difference from prediction and explanation:**
+Фактично були змінені саме файли, передбачені на етапі планування. Додаткових суттєвих файлів не змінювалося. Реалізація охопила `checkout`, `inventory`, `orders` та `payments`, а також відповідне оновлення `DECISIONS.md`.
